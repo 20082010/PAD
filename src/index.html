@@ -13,6 +13,8 @@
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
     .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
     .card-shadow { box-shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.1); }
+    .slider-thumb::-webkit-slider-thumb { @apply bg-blue-500 w-5 h-5 rounded-full cursor-pointer appearance-none; }
+    .slider-thumb::-moz-range-thumb { @apply bg-blue-500 w-5 h-5 rounded-full cursor-pointer border-none; }
   </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen flex items-center justify-center p-2 sm:p-4">
@@ -113,6 +115,8 @@
         result: renderResult,
         history: renderHistory
       }[state.currentStep]();
+      lucide.createIcons();
+      bindEvents();
     }
 
     function renderInfo() {
@@ -124,25 +128,25 @@
           <div class="p-4 space-y-4">
             <div>
               <label class="block text-sm font-medium mb-1">姓名 *</label>
-              <input type="text" id="name" value="${state.userInfo.name}" placeholder="请输入您的姓名" class="w-full border rounded px-3 py-2">
+              <input type="text" id="name" value="${state.userInfo.name}" placeholder="请输入您的姓名" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">手机号 *</label>
-              <input type="tel" id="phone" value="${state.userInfo.phone}" placeholder="请输入手机号" class="w-full border rounded px-3 py-2">
+              <input type="tel" id="phone" value="${state.userInfo.phone}" placeholder="请输入手机号" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">年龄 *</label>
-              <input type="number" id="age" value="${state.userInfo.age}" placeholder="请输入年龄" min="1" max="120" class="w-full border rounded px-3 py-2">
+              <input type="number" id="age" value="${state.userInfo.age}" placeholder="请输入年龄" min="1" max="120" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">性别</label>
               <div class="flex space-x-4">
-                <label><input type="radio" name="gender" value="male" ${state.userInfo.gender === 'male' ? 'checked' : ''}> 男</label>
-                <label><input type="radio" name="gender" value="female" ${state.userInfo.gender === 'female' ? 'checked' : ''}> 女</label>
+                <label class="flex items-center"><input type="radio" name="gender" value="male" ${state.userInfo.gender === 'male' ? 'checked' : ''} class="mr-1"> 男</label>
+                <label class="flex items-center"><input type="radio" name="gender" value="female" ${state.userInfo.gender === 'female' ? 'checked' : ''} class="mr-1"> 女</label>
               </div>
             </div>
-            <button id="startBtn" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded">开始测评</button>
-            ${state.history.length ? `<button id="historyBtn" class="w-full border py-2 rounded mt-2 flex items-center justify-center"><i data-lucide="history" class="w-4 h-4 mr-2"></i>查看历史记录 (${state.history.length})</button>` : ''}
+            <button id="startBtn" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded-md hover:from-blue-600 hover:to-purple-700 transition">开始测评</button>
+            ${state.history.length ? `<button id="historyBtn" class="w-full border border-gray-300 py-2 rounded-md mt-2 flex items-center justify-center hover:bg-gray-50 transition"><i data-lucide="history" class="w-4 h-4 mr-2"></i>查看历史记录 (${state.history.length})</button>` : ''}
           </div>
         </div>
       `;
@@ -154,7 +158,7 @@
       return `
         <div>
           <div class="flex justify-end mb-2">
-            <button id="cancelBtn" class="text-gray-500 hover:text-red-500 text-sm flex items-center"><i data-lucide="x-circle" class="w-4 h-4 mr-1"></i>取消</button>
+            <button id="cancelBtn" class="text-gray-500 hover:text-red-500 text-sm flex items-center transition"><i data-lucide="x-circle" class="w-4 h-4 mr-1"></i>取消</button>
           </div>
           <div class="card-shadow bg-white rounded-xl overflow-hidden">
             <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-4">
@@ -163,20 +167,20 @@
             </div>
             <div class="p-4 space-y-4">
               <div class="grid grid-cols-2 gap-4 text-center font-medium">
-                <div class="text-red-600 bg-red-50 p-3 rounded">${q.left}</div>
-                <div class="text-green-600 bg-green-50 p-3 rounded">${q.right}</div>
+                <div class="text-red-600 bg-red-50 p-3 rounded-lg">${q.left}</div>
+                <div class="text-green-600 bg-green-50 p-3 rounded-lg">${q.right}</div>
               </div>
-              <div class="text-center text-2xl font-bold">${val < 0 ? q.left : val > 0 ? q.right : '中立'}</div>
-              <input type="range" id="slider" min="-4" max="4" step="0.1" value="${val}" class="w-full">
+              <div class="text-center text-2xl font-bold text-gray-800">${val < 0 ? q.left : val > 0 ? q.right : '中立'}</div>
+              <input type="range" id="slider" min="-4" max="4" step="0.1" value="${val}" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb">
               <div class="flex justify-between text-sm text-gray-500">
                 <span>-4 (${q.left})</span><span>0 (中立)</span><span>4 (${q.right})</span>
               </div>
-              <div class="text-center"><span class="bg-gray-100 px-3 py-1 rounded-full text-lg">评分: ${val}</span></div>
-              <div class="flex justify-between">
-                <button id="prevBtn" ${state.currentQuestion === 0 ? 'disabled' : ''} class="border px-4 py-2 rounded flex items-center"><i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i>上一题</button>
+              <div class="text-center"><span class="bg-gray-100 px-3 py-1 rounded-full text-lg">评分: ${parseFloat(val).toFixed(1)}</span></div>
+              <div class="flex justify-between pt-4">
+                <button id="prevBtn" ${state.currentQuestion === 0 ? 'disabled' : ''} class="border border-gray-300 px-4 py-2 rounded-md flex items-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"><i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i>上一题</button>
                 ${state.currentQuestion === 11
-                  ? '<button id="submitBtn" class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded">提交结果</button>'
-                  : '<button id="nextBtn" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded flex items-center">下一题<i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i></button>'
+                  ? '<button id="submitBtn" class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-md hover:from-green-600 hover:to-blue-600 transition">提交结果</button>'
+                  : '<button id="nextBtn" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-md flex items-center hover:from-blue-600 hover:to-purple-700 transition">下一题<i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i></button>'
                 }
               </div>
             </div>
@@ -191,32 +195,32 @@
       return `
         <div class="space-y-4">
           <div class="card-shadow bg-white rounded-xl p-4">
-            <h3 class="font-bold mb-2">用户信息</h3>
+            <h3 class="font-bold mb-2 text-gray-700">用户信息</h3>
             <div class="grid grid-cols-2 gap-2 text-sm text-gray-600">
               <div>姓名：${name}</div><div>年龄：${age}岁</div>
               <div>性别：${gender === 'male' ? '男' : '女'}</div><div>手机：${phone}</div>
             </div>
-            <div class="text-xs text-gray-500 mt-2">测试时间：${new Date(timestamp).toLocaleString()}</div>
+            <div class="text-xs text-gray-500 mt-2 pt-2 border-t">测试时间：${new Date(timestamp).toLocaleString()}</div>
           </div>
 
           <div class="card-shadow bg-white rounded-xl p-4">
-            <h3 class="font-bold mb-2">PAD维度分析</h3>
+            <h3 class="font-bold mb-2 text-gray-700">PAD维度分析</h3>
             <div class="grid grid-cols-3 gap-2 text-center">
-              <div class="bg-blue-50 rounded p-2"><div class="font-bold text-blue-600">${pad.P.toFixed(1)}</div><div class="text-xs">愉悦度(P)</div></div>
-              <div class="bg-green-50 rounded p-2"><div class="font-bold text-green-600">${pad.A.toFixed(1)}</div><div class="text-xs">激活度(A)</div></div>
-              <div class="bg-purple-50 rounded p-2"><div class="font-bold text-purple-600">${pad.D.toFixed(1)}</div><div class="text-xs">支配度(D)</div></div>
+              <div class="bg-blue-50 rounded-lg p-3 border border-blue-200"><div class="text-xl font-bold text-blue-600">${pad.P.toFixed(1)}</div><div class="text-xs text-blue-800 font-medium">愉悦度(P)</div></div>
+              <div class="bg-green-50 rounded-lg p-3 border border-green-200"><div class="text-xl font-bold text-green-600">${pad.A.toFixed(1)}</div><div class="text-xs text-green-800 font-medium">激活度(A)</div></div>
+              <div class="bg-purple-50 rounded-lg p-3 border border-purple-200"><div class="text-xl font-bold text-purple-600">${pad.D.toFixed(1)}</div><div class="text-xs text-purple-800 font-medium">支配度(D)</div></div>
             </div>
           </div>
 
           <div class="card-shadow bg-white rounded-xl p-4 text-center">
-            <h3 class="font-bold mb-2">情感匹配结果</h3>
+            <h3 class="font-bold mb-2 text-gray-700">情感匹配结果</h3>
             <div class="text-2xl font-bold text-indigo-600">${match.emotion.name}</div>
-            <div class="text-sm text-gray-600">匹配度: ${(100 - match.distance * 10).toFixed(1)}%</div>
+            <div class="text-sm text-gray-600 mt-1">匹配度: ${(100 - match.distance * 10).toFixed(1)}%</div>
           </div>
 
           <div class="grid grid-cols-2 gap-2">
-            <button id="resetBtn" class="border py-2 rounded flex items-center justify-center"><i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i>重新测试</button>
-            <button id="historyBtn2" class="border py-2 rounded flex items-center justify-center"><i data-lucide="history" class="w-4 h-4 mr-2"></i>查看历史</button>
+            <button id="resetBtn" class="border border-gray-300 py-2 rounded-md flex items-center justify-center hover:bg-gray-50 transition"><i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i>重新测试</button>
+            <button id="historyBtn2" class="border border-gray-300 py-2 rounded-md flex items-center justify-center hover:bg-gray-50 transition"><i data-lucide="history" class="w-4 h-4 mr-2"></i>查看历史</button>
           </div>
         </div>
       `;
@@ -230,29 +234,29 @@
             <p class="text-sm opacity-90">您过往的测评记录</p>
           </div>
           <div class="p-4">
-            <div class="text-sm text-gray-600 mb-2">共 ${state.history.length} 条记录</div>
-            <div class="max-h-96 overflow-y-auto space-y-2">
+            <div class="text-sm text-gray-600 mb-3">共 ${state.history.length} 条记录</div>
+            <div class="max-h-96 overflow-y-auto space-y-3">
               ${state.history.length
                 ? state.history.map((item, i) => `
-                  <div class="border rounded p-3 cursor-pointer hover:shadow" data-index="${i}">
+                  <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:shadow-md transition" data-index="${i}">
                     <div class="flex justify-between items-start">
                       <div>
-                        <div class="font-medium">${item.name}</div>
+                        <div class="font-medium text-gray-800">${item.name}</div>
                         <div class="text-xs text-gray-500">${new Date(item.timestamp).toLocaleString()}</div>
                       </div>
-                      <span class="bg-gradient-to-r from-purple-100 to-pink-100 text-xs px-2 py-1 rounded">${item.match.emotion.name}</span>
+                      <span class="bg-gradient-to-r from-purple-100 to-pink-100 text-xs px-2 py-1 rounded-full">${item.match.emotion.name}</span>
                     </div>
-                    <div class="text-xs grid grid-cols-3 gap-1 mt-1 text-center">
-                      <div class="bg-blue-50 rounded">P ${item.pad.P.toFixed(1)}</div>
-                      <div class="bg-green-50 rounded">A ${item.pad.A.toFixed(1)}</div>
-                      <div class="bg-purple-50 rounded">D ${item.pad.D.toFixed(1)}</div>
+                    <div class="text-xs grid grid-cols-3 gap-1 mt-2 text-center">
+                      <div class="bg-blue-50 rounded py-1"><span class="text-blue-600 font-medium">P</span> ${item.pad.P.toFixed(1)}</div>
+                      <div class="bg-green-50 rounded py-1"><span class="text-green-600 font-medium">A</span> ${item.pad.A.toFixed(1)}</div>
+                      <div class="bg-purple-50 rounded py-1"><span class="text-purple-600 font-medium">D</span> ${item.pad.D.toFixed(1)}</div>
                     </div>
                   </div>
                 `).join('')
                 : '<div class="text-center text-gray-400 py-8">暂无历史记录</div>'
               }
             </div>
-            <button id="homeBtn" class="w-full mt-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded"><i data-lucide="home" class="w-4 h-4 mr-2 inline"></i>返回首页</button>
+            <button id="homeBtn" class="w-full mt-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-2 rounded-md hover:from-indigo-600 hover:to-purple-600 transition"><i data-lucide="home" class="w-4 h-4 mr-2 inline"></i>返回首页</button>
           </div>
         </div>
       `;
@@ -300,9 +304,6 @@
 
     /* ========= 初始化 ========= */
     render();
-    lucide.createIcons();
-    bindEvents();
   </script>
 </body>
 </html>
-  
